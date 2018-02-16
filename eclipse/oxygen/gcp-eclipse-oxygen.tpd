@@ -15,9 +15,13 @@ location "http://download.eclipse.org/cbi/updates/license/" {
     org.eclipse.license.feature.group
 }
 
-location "http://download.eclipse.org/releases/oxygen/" {
+// Oxygen.3 RC2
+location "http://download.eclipse.org/eclipse/updates/4.7-M-builds/M-4.7.3RC2-201802150545/" {
 	org.eclipse.sdk.feature.group
 	org.eclipse.jdt.feature.group
+}
+
+location "http://download.eclipse.org/releases/oxygen/" {
 	org.eclipse.m2e.feature.feature.group
 	org.eclipse.m2e.sdk.feature.feature.group
 	org.eclipse.m2e.wtp.feature.feature.group
