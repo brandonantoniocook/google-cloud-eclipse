@@ -263,7 +263,7 @@
         point="org.eclipse.ui.navigator.navigatorContent">
      <navigatorContent
            id="com.google.cloud.tools.eclipse.appengine.navigator"
-           name="App Engine"
+           name="App Engine Content Provider"
            activeByDefault="true"
            appearsBefore="org.eclipse.jst.jee.ui.web"
            icon="platform:/plugin/com.google.cloud.tools.eclipse.appengine.ui/icons/gae-16x16.png"
