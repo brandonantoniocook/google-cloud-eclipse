@@ -15,7 +15,7 @@ gcloud components install app-engine-java --quiet
 echo "OAUTH_CLIENT_ID: ${OAUTH_CLIENT_ID}"
 echo "OAUTH_CLIENT_SECRET: ${OAUTH_CLIENT_SECRET}"
 echo "ANALYTICS_TRACKING_ID: ${ANALYTICS_TRACKING_ID}"
-echo "CT4E_DISPLAY_VERSION_QUALIFIER: ${CT4E_DISPLAY_VERSION_QUALIFIER}"
+echo "PRODUCT_VERSION_SUFFIX: "${PRODUCT_VERSION_SUFFIX}
 
 # Exit if undefined (zero-length).
 test -n "${OAUTH_CLIENT_ID}"
@@ -24,28 +24,19 @@ test -n "${ANALYTICS_TRACKING_ID}"
 
 cd git/google-cloud-eclipse
 
-# Drop the `.qualifier` in `metadata.product` and use the exact release
-# version. (For example, `version="1.3.0.qualifier"` to `version="1.3.0"`.)
-# version.
-#
-# https://github.com/GoogleCloudPlatform/google-cloud-eclipse/pull/2363#issuecomment-327844378
-# https://github.com/GoogleCloudPlatform/google-cloud-eclipse/issues/2211
-readonly CT4E_DISPLAY_VERSION="$( \
-  xmlstarlet sel -t -v '/product/@version' gcp-repo/metadata.product )"
-readonly NO_QUALIFIER_VERSION="${CT4E_DISPLAY_VERSION%.qualifier}"
-FINAL_VERSION="${NO_QUALIFIER_VERSION}"
-if [ "${CT4E_DISPLAY_VERSION_QUALIFIER}" ]; then
-  FINAL_VERSION="${FINAL_VERSION}.${CT4E_DISPLAY_VERSION_QUALIFIER}"
+VERSION_SUFFIX_PROPERTY=
+if [ "${PRODUCT_VERSION_SUFFIX}" ]; then
+  VERSION_SUFFIX_PROPERTY="'${PRODUCT_VERSION_SUFFIX}'"
 fi
-xmlstarlet ed --inplace -u '/product/@version' -v "${FINAL_VERSION}" \
-  gcp-repo/metadata.product
 
 # Need to unset `TMPDIR` for `xvfb-run` due to a bug:
 # https://bugs.launchpad.net/ubuntu/+source/xorg-server/+bug/972324
 TMPDIR= xvfb-run \
-  mvn -V -B -Doauth.client.id="${OAUTH_CLIENT_ID}" \
-            -Doauth.client.secret="${OAUTH_CLIENT_SECRET}" \
-            -Dga.tracking.id="${ANALYTICS_TRACKING_ID}" \
+  mvn -V -B \
+      -Dproduct.version.qualifier.suffix="${VERSION_SUFFIX_PROPERTY}" \
+      -Doauth.client.id="${OAUTH_CLIENT_ID}" \
+      -Doauth.client.secret="${OAUTH_CLIENT_SECRET}" \
+      -Dga.tracking.id="${ANALYTICS_TRACKING_ID}" \
     clean verify
 
 # Also export `metadata.product` and `metadata.p2.inf` to the second Kokoro job.
