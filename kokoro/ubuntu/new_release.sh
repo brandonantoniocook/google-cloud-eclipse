@@ -9,8 +9,8 @@ set -e
 set -x
 
 export CLOUDSDK_CORE_DISABLE_USAGE_REPORTING=true
-gcloud components update --quiet
-gcloud components install app-engine-java --quiet
+#gcloud components update --quiet
+#gcloud components install app-engine-java --quiet
 
 echo "OAUTH_CLIENT_ID: ${OAUTH_CLIENT_ID}"
 echo "OAUTH_CLIENT_SECRET: ${OAUTH_CLIENT_SECRET}"
@@ -37,7 +37,7 @@ TMPDIR= xvfb-run \
       -Doauth.client.id="${OAUTH_CLIENT_ID}" \
       -Doauth.client.secret="${OAUTH_CLIENT_SECRET}" \
       -Dga.tracking.id="${ANALYTICS_TRACKING_ID}" \
-    clean verify
+    clean package
 
 # Also export `metadata.product` and `metadata.p2.inf` to the second Kokoro job.
 readonly METADATA_DIR=gcp-repo/target/repository/metadata

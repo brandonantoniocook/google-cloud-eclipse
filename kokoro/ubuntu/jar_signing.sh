@@ -9,6 +9,8 @@ set -e
 set -x
 
 echo "KOKORO_GFILE_DIR: ${KOKORO_GFILE_DIR}"
+exit 0
+
 ls -l "${KOKORO_GFILE_DIR}"
 tar -C "${HOME}" -zxf "${KOKORO_GFILE_DIR}"/eclipse-jee-oxygen-*.tar.gz
 
