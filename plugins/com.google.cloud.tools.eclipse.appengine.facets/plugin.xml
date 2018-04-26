@@ -250,16 +250,45 @@
   </extension>
   <!-- end App Engine flex JAR facet -->
 
-  <extension point="org.eclipse.core.contenttype.contentTypes">
-    <content-type id="yaml"
-        name="YAML"
-        file-extensions="yaml,yml"
-        base-type="org.eclipse.core.runtime.text" />
-  </extension>
   <extension
         point="org.eclipse.wst.common.project.facet.core.detectors">
      <detector
            class="com.google.cloud.tools.eclipse.appengine.facets.AppEngineStandardJre7ProjectFacetDetector">
      </detector>
+  </extension>
+  
+  
+  
+  <extension
+        point="org.eclipse.ui.navigator.navigatorContent">
+     <navigatorContent
+           id="com.google.cloud.tools.eclipse.appengine.navigator"
+           name="App Engine"
+           activeByDefault="true"
+           appearsBefore="org.eclipse.jst.jee.ui.web"
+           icon="platform:/plugin/com.google.cloud.tools.eclipse.appengine.ui/icons/gae-16x16.png"
+           contentProvider="com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.AppEngineContentProvider"
+           labelProvider="com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.AppEngineLabelProvider"
+           priority="high">
+        <triggerPoints>
+          <reference
+                definitionId="com.google.cloud.tools.eclipse.appengine.onlyForStandardProjects">
+          </reference>
+        </triggerPoints>
+        <possibleChildren>
+           <instanceof
+                 value="org.eclipse.core.resources.IProject">
+           </instanceof>
+        </possibleChildren>
+     </navigatorContent>
+  </extension>
+  <extension
+        point="org.eclipse.ui.navigator.viewer">
+     <viewerContentBinding
+           viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+        <includes>
+           <contentExtension pattern="com.google.cloud.tools.eclipse.appengine.navigator"/>
+        </includes>
+     </viewerContentBinding>
   </extension>
 </plugin>

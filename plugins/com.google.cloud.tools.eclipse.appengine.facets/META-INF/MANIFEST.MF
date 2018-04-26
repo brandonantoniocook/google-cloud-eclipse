@@ -15,7 +15,9 @@ Require-Bundle: com.google.cloud.tools.appengine;bundle-version="0.5.2",
  org.eclipse.jst.j2ee,
  org.eclipse.jst.j2ee.web,
  org.eclipse.m2e.maven.runtime,
- org.eclipse.swt
+ org.eclipse.swt,
+ org.eclipse.ui.navigator,
+ org.eclipse.jface
 Import-Package: com.google.cloud.tools.eclipse.appengine.deploy.flex,
  com.google.cloud.tools.eclipse.ui.util,
  com.google.cloud.tools.eclipse.util,
