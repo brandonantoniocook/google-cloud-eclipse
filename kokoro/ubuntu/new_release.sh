@@ -24,19 +24,17 @@ test -n "${ANALYTICS_TRACKING_ID}"
 
 cd git/google-cloud-eclipse
 
-VERSION_SUFFIX_PROPERTY=
-if [ "${PRODUCT_VERSION_SUFFIX}" ]; then
-  VERSION_SUFFIX_PROPERTY="'${PRODUCT_VERSION_SUFFIX}'"
-fi
-
-# Need to unset `TMPDIR` for `xvfb-run` due to a bug:
-# https://bugs.launchpad.net/ubuntu/+source/xorg-server/+bug/972324
+# A few notes on the Maven command:
+#    - Need to unset `TMPDIR` for `xvfb-run` due to a bug:
+#      https://bugs.launchpad.net/ubuntu/+source/xorg-server/+bug/972324
+#    - Single-quotes are necessary for `-Dproduct.version.qualifier.suffix`,
+#      since it should be appended as a constant string in a date format.
 TMPDIR= xvfb-run \
   mvn -V -B \
-      -Dproduct.version.qualifier.suffix="${VERSION_SUFFIX_PROPERTY}" \
       -Doauth.client.id="${OAUTH_CLIENT_ID}" \
       -Doauth.client.secret="${OAUTH_CLIENT_SECRET}" \
       -Dga.tracking.id="${ANALYTICS_TRACKING_ID}" \
+      ${PRODUCT_VERSION_SUFFIX:+-Dproduct.version.qualifier.suffix="'${PRODUCT_VERSION_SUFFIX}'"} \
     clean package
 
 # Also export `metadata.product` and `metadata.p2.inf` to the second Kokoro job.
