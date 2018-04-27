@@ -8,7 +8,8 @@ set -e
 # Display commands being run.
 set -x
 
-gsutil cp "gs://ct4e-m2-repositories/m2-oxygen.tar" - | tar -C "${HOME}" -xvf -
+gsutil -q cp "gs://ct4e-m2-repositories/m2-oxygen.tar" - \
+  | tar -C "${HOME}" -xf -
 
 export CLOUDSDK_CORE_DISABLE_USAGE_REPORTING=true
 #gcloud components update --quiet
