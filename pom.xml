@@ -260,7 +260,6 @@
           </dependency>
         </dependencies>
         <configuration>
-          <format>yyyyMMddHHmm${product.version.qualifier.postfix}</format>
           <timestampProvider>${tycho.buildtimestamp.provider}</timestampProvider>
           <jgit.dirtyWorkingTree>${jgit.dirtyWorkingTree}</jgit.dirtyWorkingTree>
           <jgit.ignore>
