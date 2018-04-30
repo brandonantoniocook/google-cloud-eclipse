@@ -24,8 +24,9 @@ function sign_jars() {
   for f in "${KOKORO_GFILE_DIR}/${1}"/*.jar
   do
     local filename=$( basename "${f}" )
-    /escalated_sign/escalated_sign.py -j /escalated_sign_jobs -t signjar \
-      "${f}" "${SIGNED_JAR_DIR}/${1}/${filename}"
+    #/escalated_sign/escalated_sign.py -j /escalated_sign_jobs -t signjar \
+    #  "${f}" "${SIGNED_JAR_DIR}/${1}/${filename}"
+    cp "${f}" "${SIGNED_JAR_DIR}/${1}/${filename}"
   done
 }
 
