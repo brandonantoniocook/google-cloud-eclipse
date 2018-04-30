@@ -53,7 +53,7 @@ cp "${KOKORO_GFILE_DIR}/index.html" "${NEW_REPO}"
 ls -lR "${NEW_REPO}"
 
 ###############################################################################
-# Mirror (copy) p2 metadata from the unsigned repo
+# Mirror (copy) p2 metadata from the unsigned repo.
 
 "${ECLIPSE_BIN}" -nosplash -consolelog \
   -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication \
