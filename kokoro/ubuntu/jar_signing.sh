@@ -38,7 +38,7 @@ ls -lR "${SIGNED_JAR_DIR}"
 ###############################################################################
 # Generate a new p2 repo from the signed artifacts.
 
-"${ECLIPSE_BIN}" -nosplash -console -consolelog \
+"${ECLIPSE_BIN}" -nosplash -consolelog \
   -application org.eclipse.equinox.p2.publisher.FeaturesAndBundlesPublisher \
   -metadataRepositoryName 'Google Cloud Tools for Eclipse' \
   -metadataRepository file:"${NEW_REPO}" \
@@ -55,7 +55,7 @@ ls -lR "${NEW_REPO}"
 ###############################################################################
 # Mirror (copy) p2 metadata from the unsigned repo
 
-"${ECLIPSE_BIN}" -nosplash -console -consolelog \
+"${ECLIPSE_BIN}" -nosplash -consolelog \
   -application org.eclipse.equinox.p2.metadata.repository.mirrorApplication \
   -source file:"${KOKORO_GFILE_DIR}" \
   -destination file:"${NEW_REPO}"
