@@ -17,15 +17,18 @@
 package com.google.cloud.tools.eclipse.appengine.facets.ui.navigator;
 
 import java.util.Objects;
+import org.eclipse.jface.resource.ImageDescriptor;
 
 /** An element of a {@code appengine-web.xml}. */
 public class AppEngineElement {
-  private String label;
-  private String value;
+  private final String label;
+  private final String value;
+  private final ImageDescriptor image;
 
-  public AppEngineElement(String label, String value) {
+  public AppEngineElement(String label, String value, ImageDescriptor image) {
     this.label = label;
     this.value = value;
+    this.image = image;
   }
 
   @Override
@@ -46,6 +49,10 @@ public class AppEngineElement {
     }
     AppEngineElement other = (AppEngineElement) obj;
     return Objects.equals(this.label, other.label) && Objects.equals(this.value, other.value);
+  }
+
+  public ImageDescriptor getImageDescriptor() {
+    return image;
   }
 
   @Override

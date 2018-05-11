@@ -1,7 +1,7 @@
+
 package com.google.cloud.tools.eclipse.appengine.facets.ui.navigator;
 
 import com.google.cloud.tools.appengine.AppEngineDescriptor;
-import com.google.cloud.tools.appengine.api.AppEngineException;
 import com.google.cloud.tools.eclipse.appengine.facets.AppEngineStandardFacet;
 import com.google.cloud.tools.eclipse.appengine.facets.WebProjectUtil;
 import java.io.IOException;
@@ -33,36 +33,11 @@ public class AppEngineContentProvider implements ITreeContentProvider {
 
   @Override
   public boolean hasChildren(Object element) {
-    return element instanceof IProject || element instanceof AppEngineDescriptor;
+    return element instanceof IProject;
   }
 
   @Override
   public Object[] getChildren(Object parentElement) {
-    if (parentElement instanceof AppEngineDescriptor) {
-      AppEngineDescriptor descriptor = (AppEngineDescriptor) parentElement;
-      List<AppEngineElement> elements = new ArrayList<>();
-      try {
-        String projectId = descriptor.getProjectId();
-        if (projectId != null) {
-          elements.add(new AppEngineElement("Project", projectId));
-        }
-        String projectVersion = descriptor.getProjectVersion();
-        if (projectId != null) {
-          elements.add(new AppEngineElement("Version", projectVersion));
-        }
-        String serviceId = descriptor.getServiceId();
-        if (serviceId != null) {
-          elements.add(new AppEngineElement("Service", serviceId));
-        }
-        String runtime = descriptor.getRuntime();
-        if (runtime != null) {
-          elements.add(new AppEngineElement("Runtime", runtime));
-        }
-      } catch (AppEngineException ex) {
-        logger.warning("Unable to determine App Engine model: " + ex);
-      }
-      return elements.toArray();
-    }
     if (parentElement instanceof IProject) {
       IFacetedProject project = getProject(parentElement);
       if (project != null && AppEngineStandardFacet.hasFacet(project)) {
@@ -70,7 +45,18 @@ public class AppEngineContentProvider implements ITreeContentProvider {
             WebProjectUtil.findInWebInf(project.getProject(), new Path("appengine-web.xml"));
         if (appEngineWebDescriptorFile != null && appEngineWebDescriptorFile.exists()) {
           try (InputStream input = appEngineWebDescriptorFile.getContents()) {
-            return new Object[] {AppEngineDescriptor.parse(input)};
+            AppEngineDescriptor descriptor = AppEngineDescriptor.parse(input);
+
+            List<Object> contents = new ArrayList<>();
+            contents.add(descriptor);
+            // if ("default".equals(descriptor.getServiceId())) {
+            // addDatastoreIndexes(project, contents);
+            // addCron(project, contents);
+            // addTaskQueues(project, contents);
+            // addDenialOfService(project, contents);
+            // addDispatch(project, contents);
+            // }
+            return contents.toArray();
           } catch (CoreException | SAXException | IOException ex) {
             IPath path = appEngineWebDescriptorFile.getFullPath();
             logger.log(Level.WARNING, "Unable to parse " + path, ex);
@@ -87,7 +73,7 @@ public class AppEngineContentProvider implements ITreeContentProvider {
   }
 
   /** Try to get a project from the given element, return {@code null} otherwise. */
-  private static IFacetedProject getProject(Object inputElement) {
+  static IFacetedProject getProject(Object inputElement) {
     try {
       if (inputElement instanceof IFacetedProject) {
         return (IFacetedProject) inputElement;

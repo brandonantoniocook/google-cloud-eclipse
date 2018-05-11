@@ -257,19 +257,18 @@
      </detector>
   </extension>
   
-  
-  
   <extension
         point="org.eclipse.ui.navigator.navigatorContent">
      <navigatorContent
-           id="com.google.cloud.tools.eclipse.appengine.navigator"
-           name="App Engine Content Provider"
            activeByDefault="true"
            appearsBefore="org.eclipse.jst.jee.ui.web"
-           icon="platform:/plugin/com.google.cloud.tools.eclipse.appengine.ui/icons/gae-16x16.png"
            contentProvider="com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.AppEngineContentProvider"
+           icon="platform:/plugin/com.google.cloud.tools.eclipse.appengine.ui/icons/gae-16x16.png"
+           id="com.google.cloud.tools.eclipse.appengine.navigator"
            labelProvider="com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.AppEngineLabelProvider"
-           priority="high">
+           name="App Engine Content Provider"
+           priority="high"
+           sortOnly="false">
         <triggerPoints>
           <reference
                 definitionId="com.google.cloud.tools.eclipse.appengine.onlyForStandardProjects">
@@ -280,6 +279,9 @@
                  value="org.eclipse.core.resources.IProject">
            </instanceof>
         </possibleChildren>
+        <commonSorter
+              class="com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.MySorter">
+        </commonSorter>
      </navigatorContent>
   </extension>
   <extension
