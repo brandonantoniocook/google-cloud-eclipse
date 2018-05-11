@@ -267,8 +267,7 @@
            id="com.google.cloud.tools.eclipse.appengine.navigator"
            labelProvider="com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.AppEngineLabelProvider"
            name="App Engine Content Provider"
-           priority="high"
-           sortOnly="false">
+           priority="high">
         <triggerPoints>
           <reference
                 definitionId="com.google.cloud.tools.eclipse.appengine.onlyForStandardProjects">
@@ -279,10 +278,16 @@
                  value="org.eclipse.core.resources.IProject">
            </instanceof>
         </possibleChildren>
-        <commonSorter
-              class="com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.MySorter">
-        </commonSorter>
      </navigatorContent>
+     <actionProvider
+           class="com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.AppEngineActionProvider"
+           id="com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.actions">
+        <enablement>
+           <instanceof
+                 value="com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.AppEngineResourceElement">
+           </instanceof>
+        </enablement>
+     </actionProvider>
   </extension>
   <extension
         point="org.eclipse.ui.navigator.viewer">

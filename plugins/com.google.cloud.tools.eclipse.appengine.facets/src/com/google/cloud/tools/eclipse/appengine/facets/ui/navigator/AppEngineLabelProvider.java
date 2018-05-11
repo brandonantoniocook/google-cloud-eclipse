@@ -6,6 +6,7 @@ import com.google.cloud.tools.appengine.api.AppEngineException;
 import com.google.cloud.tools.eclipse.appengine.facets.AppEngineStandardFacet;
 import com.google.cloud.tools.eclipse.appengine.facets.WebProjectUtil;
 import com.google.cloud.tools.eclipse.appengine.ui.AppEngineImages;
+import com.google.cloud.tools.eclipse.ui.util.images.SharedImages;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,10 +70,10 @@ public class AppEngineLabelProvider extends LabelProvider implements IStyledLabe
           }
         }
       }
-    } else if (element instanceof AppEngineDescriptor) {
+    } else if (element instanceof AppEngineWebDescriptor) {
       StyledString str = new StyledString("App Engine");
       str.append(" [standard", StyledString.QUALIFIER_STYLER);
-      AppEngineDescriptor descriptor = (AppEngineDescriptor) element;
+      AppEngineDescriptor descriptor = ((AppEngineWebDescriptor) element).getDescriptor();
       try {
         str.append(": ", StyledString.QUALIFIER_STYLER); //$NON-NLS-1$
         str.append(
@@ -82,8 +83,14 @@ public class AppEngineLabelProvider extends LabelProvider implements IStyledLabe
       }
       str.append("]", StyledString.QUALIFIER_STYLER); //$NON-NLS-1$
       return str;
-    } else if (element instanceof AppEngineElement) {
-      return new StyledString(element.toString());
+    } else if (element instanceof AppEngineDatastoreIndexes) {
+      return new StyledString("Datastore Indexes Configuration");
+    } else if (element instanceof AppEngineDenialOfServiceDescriptor) {
+      return new StyledString("Denial of Service Protection");
+    } else if (element instanceof AppEngineDispatchDescriptor) {
+      return new StyledString("Dispatch Routing Rules");
+    } else if (element instanceof AppEngineTaskQueuesDescriptor) {
+      return new StyledString("Task Queue Definitions");
     }
     return null;
   }
@@ -93,13 +100,12 @@ public class AppEngineLabelProvider extends LabelProvider implements IStyledLabe
     if (element instanceof IProject) {
       IFacetedProject project = AppEngineContentProvider.getProject(element);
       if (project != null && AppEngineStandardFacet.hasFacet(project)) {
-        return resources.createImage(AppEngineImages.appEngine(16));
+        return resources.createImage(AppEngineImages.APPENGINE_IMAGE_DESCRIPTOR);
       }
-    } else if (element instanceof AppEngineDescriptor) {
-      return resources.createImage(AppEngineImages.appEngine(16));
-    } else if (element instanceof AppEngineElement
-        && ((AppEngineElement) element).getImageDescriptor() != null) {
-      return resources.createImage(((AppEngineElement) element).getImageDescriptor());
+    } else if (element instanceof AppEngineWebDescriptor) {
+      return resources.createImage(AppEngineImages.APPENGINE_GREY_IMAGE_DESCRIPTOR);
+    } else if (element instanceof AppEngineDatastoreIndexes) {
+      return resources.createImage(SharedImages.DATASTORE_GREY_IMAGE_DESCRIPTOR);
     }
     return null;
   }

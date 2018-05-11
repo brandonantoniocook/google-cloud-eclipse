@@ -2,6 +2,7 @@
 package com.google.cloud.tools.eclipse.appengine.facets.ui.navigator;
 
 import com.google.cloud.tools.appengine.AppEngineDescriptor;
+import com.google.cloud.tools.appengine.api.AppEngineException;
 import com.google.cloud.tools.eclipse.appengine.facets.AppEngineStandardFacet;
 import com.google.cloud.tools.eclipse.appengine.facets.WebProjectUtil;
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class AppEngineContentProvider implements ITreeContentProvider {
 
   @Override
   public boolean hasChildren(Object element) {
-    return element instanceof IProject;
+    return element instanceof IProject || element instanceof AppEngineWebDescriptor;
   }
 
   @Override
@@ -46,26 +47,78 @@ public class AppEngineContentProvider implements ITreeContentProvider {
         if (appEngineWebDescriptorFile != null && appEngineWebDescriptorFile.exists()) {
           try (InputStream input = appEngineWebDescriptorFile.getContents()) {
             AppEngineDescriptor descriptor = AppEngineDescriptor.parse(input);
-
-            List<Object> contents = new ArrayList<>();
-            contents.add(descriptor);
-            // if ("default".equals(descriptor.getServiceId())) {
-            // addDatastoreIndexes(project, contents);
-            // addCron(project, contents);
-            // addTaskQueues(project, contents);
-            // addDenialOfService(project, contents);
-            // addDispatch(project, contents);
-            // }
-            return contents.toArray();
+            return new Object[] {
+                new AppEngineWebDescriptor(project, appEngineWebDescriptorFile, descriptor)};
           } catch (CoreException | SAXException | IOException ex) {
             IPath path = appEngineWebDescriptorFile.getFullPath();
             logger.log(Level.WARNING, "Unable to parse " + path, ex);
           }
         }
       }
+    } else if (parentElement instanceof AppEngineWebDescriptor) {
+      List<Object> contents = new ArrayList<>();
+      AppEngineWebDescriptor webElement = (AppEngineWebDescriptor) parentElement;
+      try {
+        AppEngineDescriptor descriptor = webElement.getDescriptor();
+        if (descriptor.getServiceId() == null || "default".equals(descriptor.getServiceId())) {
+          addCron(webElement.getProject(), contents);
+          addDatastoreIndexes(webElement.getProject(), contents);
+          addTaskQueues(webElement.getProject(), contents);
+          addDenialOfService(webElement.getProject(), contents);
+          addDispatch(webElement.getProject(), contents);
+        }
+        return contents.toArray();
+      } catch (AppEngineException ex) {
+        IPath path = webElement.getFile().getFullPath();
+        logger.log(Level.WARNING, "Unable to parse " + path, ex);
+      }
     }
     return EMPTY_ARRAY;
   }
+
+  /** Add a {@code cron.xml} element if found */
+  private void addCron(IFacetedProject project, List<Object> contents) {
+    IFile cronXml = WebProjectUtil.findInWebInf(project.getProject(), new Path("cron.xml"));
+    if (cronXml != null && cronXml.exists()) {
+      contents.add(new AppEngineCronDescriptor(project, cronXml));
+    }
+  }
+
+  /** Add a {@code datastore-indexes.xml} element if found */
+  private void addDatastoreIndexes(IFacetedProject project, List<Object> contents) {
+    IFile datastoreIndexes =
+        WebProjectUtil.findInWebInf(project.getProject(), new Path("datastore-indexes.xml"));
+    if (datastoreIndexes != null && datastoreIndexes.exists()) {
+      contents.add(new AppEngineDatastoreIndexes(project, datastoreIndexes));
+    }
+  }
+
+  /** Add a {@code dispatch.xml} element if found. */
+  private void addDispatch(IFacetedProject project, List<Object> contents) {
+    IFile dispatchXml = WebProjectUtil.findInWebInf(project.getProject(), new Path("dispatch.xml"));
+    if (dispatchXml != null && dispatchXml.exists()) {
+      contents.add(new AppEngineDispatchDescriptor(project, dispatchXml));
+    }
+  }
+
+  /**
+   * Add a {@code dos.xml} element if found.
+   */
+  private void addDenialOfService(IFacetedProject project, List<Object> contents) {
+    IFile dosXml = WebProjectUtil.findInWebInf(project.getProject(), new Path("dos.xml"));
+    if (dosXml != null && dosXml.exists()) {
+      contents.add(new AppEngineDenialOfServiceDescriptor(project, dosXml));
+    }
+  }
+
+  /** Add a {@code queue.xml} element if found */
+  private void addTaskQueues(IFacetedProject project, List<Object> contents) {
+    IFile queueXml = WebProjectUtil.findInWebInf(project.getProject(), new Path("queue.xml"));
+    if (queueXml != null && queueXml.exists()) {
+      contents.add(new AppEngineTaskQueuesDescriptor(project, queueXml));
+    }
+  }
+
 
   @Override
   public Object getParent(Object element) {
