@@ -23,12 +23,17 @@ import com.google.cloud.tools.eclipse.test.util.project.TestProjectCreator;
 import com.google.cloud.tools.eclipse.util.MappedNamespaceContext;
 import com.google.cloud.tools.eclipse.util.Templates;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -75,6 +80,7 @@ public class CodeTemplatesTest {
     validateNonConfigFiles(mostImportant, "http://java.sun.com/xml/ns/javaee",
         "http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd", "2.5");
     validateAppEngineWebXml(AppEngineRuntime.STANDARD_JAVA_7);
+    validateLoggingProperties();
   }
 
   @Test
@@ -86,6 +92,7 @@ public class CodeTemplatesTest {
     validateNonConfigFiles(mostImportant, "http://xmlns.jcp.org/xml/ns/javaee",
         "http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd", "3.1");
     validateAppEngineWebXml(AppEngineRuntime.STANDARD_JAVA_8);
+    validateLoggingProperties();
   }
 
   @Test
@@ -149,7 +156,8 @@ public class CodeTemplatesTest {
     Assert.assertEquals(webXmlNamespace + " " + webXmlSchemaUrl,
         root.getAttribute("xsi:schemaLocation"));
     Assert.assertEquals(servletVersion, root.getAttribute("version"));
-    Element servletClass = (Element) root.getElementsByTagName("servlet-class").item(0);
+    Element servletClass = (Element) root
+        .getElementsByTagNameNS("http://java.sun.com/xml/ns/javaee", "servlet-class").item(0);
     if (servletClass != null) { // servlet 2.5
       Assert.assertEquals("HelloAppEngine", servletClass.getTextContent());
     }
@@ -172,18 +180,21 @@ public class CodeTemplatesTest {
     IFile appengineWebXml = webinf.getFile("appengine-web.xml");
     Assert.assertTrue(appengineWebXml.exists());
     Document doc = buildDocument(appengineWebXml);
-    NodeList threadsafeElements = doc.getDocumentElement().getElementsByTagName("threadsafe");
+    NodeList threadsafeElements = doc.getDocumentElement().getElementsByTagNameNS(
+        "http://appengine.google.com/ns/1.0", "threadsafe");
     Assert.assertEquals("Must have exactly one threadsafe", 1, threadsafeElements.getLength());
     String threadsafe = threadsafeElements.item(0).getTextContent();
     Assert.assertEquals("true", threadsafe);
     NodeList sessionsEnabledElements
-        = doc.getDocumentElement().getElementsByTagName("sessions-enabled");
+        = doc.getDocumentElement().getElementsByTagNameNS("http://appengine.google.com/ns/1.0",
+            "sessions-enabled");
     Assert.assertEquals("Must have exactly one sessions-enabled",
         1, sessionsEnabledElements.getLength());
     String sessionsEnabled = sessionsEnabledElements.item(0).getTextContent();
     Assert.assertEquals("false", sessionsEnabled);
 
-    NodeList runtimeElements = doc.getDocumentElement().getElementsByTagName("runtime");
+    NodeList runtimeElements = doc.getDocumentElement().getElementsByTagNameNS(
+        "http://appengine.google.com/ns/1.0", "runtime");
     if (runtime.getId() == null) {
       Assert.assertEquals("should not have a <runtime> element", 0, runtimeElements.getLength());
     } else {
@@ -206,12 +217,25 @@ public class CodeTemplatesTest {
     }
   }
 
+  private void validateLoggingProperties() throws FileNotFoundException, IOException {
+    IFolder loggingProperties = project.getFolder("src/main/webapp/WEB-INF/logging.properties");
+    Path path = Paths.get(loggingProperties.getLocation().toString());
+    try (InputStream in = Files.newInputStream(path)) {
+      Properties properties = new Properties();
+      properties.load(in);
+
+      Assert.assertEquals(1, properties.keySet().size());
+      Assert.assertEquals("WARNING", properties.getProperty(".level"));
+    }
+  }
+
   private void validateStandardPomXml() throws ParserConfigurationException, SAXException,
       IOException, CoreException, XPathExpressionException {
     Element root = validatePom();
     
-    String sdkVersion =
-        root.getElementsByTagName("appengine.api.sdk.version").item(0).getTextContent();
+    String sdkVersion = root
+        .getElementsByTagNameNS("http://maven.apache.org/POM/4.0.0", "appengine.api.sdk.version")
+        .item(0).getTextContent();
     DefaultArtifactVersion sdkArtifactVersion =
         new DefaultArtifactVersion(sdkVersion);
     DefaultArtifactVersion expectedSdk = new DefaultArtifactVersion("1.9.62");
@@ -228,15 +252,19 @@ public class CodeTemplatesTest {
         "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd",
         root.getAttribute("xsi:schemaLocation"));
 
-    Element groupId = (Element) root.getElementsByTagName("groupId").item(0);
+    Element groupId = (Element) root
+        .getElementsByTagNameNS("http://maven.apache.org/POM/4.0.0", "groupId").item(0);
     Assert.assertEquals("my.project.group.id", groupId.getTextContent());
-    Element artifactId = (Element) root.getElementsByTagName("artifactId").item(0);
+    Element artifactId = (Element) root
+        .getElementsByTagNameNS("http://maven.apache.org/POM/4.0.0", "artifactId").item(0);
     Assert.assertEquals("my-project-artifact-id", artifactId.getTextContent());
-    Element version = (Element) root.getElementsByTagName("version").item(0);
+    Element version = (Element) root
+        .getElementsByTagNameNS("http://maven.apache.org/POM/4.0.0", "version").item(0);
     Assert.assertEquals("98.76.54", version.getTextContent());
-    
+
     Element pluginVersion =
-        (Element) root.getElementsByTagName("appengine.maven.plugin.version").item(0);
+        (Element) root.getElementsByTagNameNS("http://maven.apache.org/POM/4.0.0",
+            "appengine.maven.plugin.version").item(0);
     DefaultArtifactVersion artifactVersion =
         new DefaultArtifactVersion(pluginVersion.getTextContent());
     DefaultArtifactVersion expected = new DefaultArtifactVersion("1.3.2");
