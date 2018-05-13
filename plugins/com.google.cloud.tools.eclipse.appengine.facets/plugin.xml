@@ -278,16 +278,16 @@
                  value="org.eclipse.core.resources.IProject">
            </instanceof>
         </possibleChildren>
+        <actionProvider
+              class="com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.AppEngineActionProvider"
+              id="com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.actions">
+           <enablement>
+              <instanceof
+                    value="com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.model.AppEngineResourceElement">
+              </instanceof>
+           </enablement>
+        </actionProvider>
      </navigatorContent>
-     <actionProvider
-           class="com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.AppEngineActionProvider"
-           id="com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.actions">
-        <enablement>
-           <instanceof
-                 value="com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.AppEngineResourceElement">
-           </instanceof>
-        </enablement>
-     </actionProvider>
   </extension>
   <extension
         point="org.eclipse.ui.navigator.viewer">

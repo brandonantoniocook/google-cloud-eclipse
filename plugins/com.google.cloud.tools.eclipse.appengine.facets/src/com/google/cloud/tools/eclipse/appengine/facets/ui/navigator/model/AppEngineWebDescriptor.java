@@ -14,16 +14,26 @@
  * limitations under the License.
  */
 
-package com.google.cloud.tools.eclipse.appengine.facets.ui.navigator;
+package com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.model;
 
+import com.google.cloud.tools.appengine.AppEngineDescriptor;
+import com.google.common.base.Preconditions;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 
 /**
- * Represents a {@code dos.xml} element.
+ * A model representation of the {@code appengine-web.xml}.
  */
-public class AppEngineDenialOfServiceDescriptor extends AppEngineResourceElement {
-  public AppEngineDenialOfServiceDescriptor(IFacetedProject project, IFile file) {
+public class AppEngineWebDescriptor extends AppEngineResourceElement {
+  private final AppEngineDescriptor descriptor;
+
+  public AppEngineWebDescriptor(IFacetedProject project, IFile file,
+      AppEngineDescriptor descriptor) {
     super(project, file);
+    this.descriptor = Preconditions.checkNotNull(descriptor);
+  }
+
+  public AppEngineDescriptor getDescriptor() {
+    return descriptor;
   }
 }

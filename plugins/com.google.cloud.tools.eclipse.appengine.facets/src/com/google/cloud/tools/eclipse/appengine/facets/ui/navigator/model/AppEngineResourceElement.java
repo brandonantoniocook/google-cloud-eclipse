@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.cloud.tools.eclipse.appengine.facets.ui.navigator;
+package com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.model;
 
 import com.google.common.base.Preconditions;
 import org.eclipse.core.resources.IFile;

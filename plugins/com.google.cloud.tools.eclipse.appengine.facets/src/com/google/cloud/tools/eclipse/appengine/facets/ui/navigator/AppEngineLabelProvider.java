@@ -5,6 +5,13 @@ import com.google.cloud.tools.appengine.AppEngineDescriptor;
 import com.google.cloud.tools.appengine.api.AppEngineException;
 import com.google.cloud.tools.eclipse.appengine.facets.AppEngineStandardFacet;
 import com.google.cloud.tools.eclipse.appengine.facets.WebProjectUtil;
+import com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.model.AppEngineCronDescriptor;
+import com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.model.AppEngineDatastoreIndexes;
+import com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.model.AppEngineDenialOfServiceDescriptor;
+import com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.model.AppEngineDispatchDescriptor;
+import com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.model.AppEngineResourceElement;
+import com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.model.AppEngineTaskQueuesDescriptor;
+import com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.model.AppEngineWebDescriptor;
 import com.google.cloud.tools.eclipse.appengine.ui.AppEngineImages;
 import com.google.cloud.tools.eclipse.ui.util.images.SharedImages;
 import com.google.common.base.Strings;
@@ -83,14 +90,20 @@ public class AppEngineLabelProvider extends LabelProvider implements IStyledLabe
       }
       str.append("]", StyledString.QUALIFIER_STYLER); //$NON-NLS-1$
       return str;
+    } else if (element instanceof AppEngineCronDescriptor) {
+      return new StyledString("Scheduled Tasks").append(" cron.xml", StyledString.QUALIFIER_STYLER);
     } else if (element instanceof AppEngineDatastoreIndexes) {
-      return new StyledString("Datastore Indexes Configuration");
+      return new StyledString("Datastore Indexes").append(" datastore-indexes.xml",
+          StyledString.QUALIFIER_STYLER);
     } else if (element instanceof AppEngineDenialOfServiceDescriptor) {
-      return new StyledString("Denial of Service Protection");
+      return new StyledString("Denial of Service Protection").append(" dos.xml",
+          StyledString.QUALIFIER_STYLER);
     } else if (element instanceof AppEngineDispatchDescriptor) {
-      return new StyledString("Dispatch Routing Rules");
+      return new StyledString("Dispatch Routing Rules").append(" dispatch.xml",
+          StyledString.QUALIFIER_STYLER);
     } else if (element instanceof AppEngineTaskQueuesDescriptor) {
-      return new StyledString("Task Queue Definitions");
+      return new StyledString("Task Queue Definitions").append(" queue.xml",
+          StyledString.QUALIFIER_STYLER);
     }
     return null;
   }
@@ -102,10 +115,14 @@ public class AppEngineLabelProvider extends LabelProvider implements IStyledLabe
       if (project != null && AppEngineStandardFacet.hasFacet(project)) {
         return resources.createImage(AppEngineImages.APPENGINE_IMAGE_DESCRIPTOR);
       }
-    } else if (element instanceof AppEngineWebDescriptor) {
-      return resources.createImage(AppEngineImages.APPENGINE_GREY_IMAGE_DESCRIPTOR);
     } else if (element instanceof AppEngineDatastoreIndexes) {
       return resources.createImage(SharedImages.DATASTORE_GREY_IMAGE_DESCRIPTOR);
+    } else if (element instanceof AppEngineResourceElement) {
+      // todo AppEngineCronDescriptor should be a timer/clock
+      // todo AppEngineDenialOfServiceDescriptor should be a do-not-enter
+      // todo AppEngineDispatchDescriptor should be a path fork
+      // todo AppEngineTaskQueuesDescriptor
+      return resources.createImage(AppEngineImages.APPENGINE_GREY_IMAGE_DESCRIPTOR);
     }
     return null;
   }

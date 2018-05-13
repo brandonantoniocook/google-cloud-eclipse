@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package com.google.cloud.tools.eclipse.appengine.facets.ui.navigator;
+package com.google.cloud.tools.eclipse.appengine.facets.ui.navigator.model;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 
 /**
- * Represents an {@code queue.xml} element.
+ * Represents a {@code dispatch.xml} element.
  */
-public class AppEngineTaskQueuesDescriptor extends AppEngineResourceElement {
-  public AppEngineTaskQueuesDescriptor(IFacetedProject project, IFile file) {
+public class AppEngineDispatchDescriptor extends AppEngineResourceElement {
+  public AppEngineDispatchDescriptor(IFacetedProject project, IFile file) {
     super(project, file);
   }
+
 }
